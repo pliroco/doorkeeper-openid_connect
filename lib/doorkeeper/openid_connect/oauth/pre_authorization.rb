@@ -4,12 +4,11 @@ module Doorkeeper
   module OpenidConnect
     module OAuth
       module PreAuthorization
-        attr_reader :nonce, :session_id
+        attr_reader :nonce
 
-        def initialize(server, attrs = {}, resource_owner = nil, request = nil)
-          super(server, attrs, resource_owner)
+        def initialize(server, attrs = {}, resource_owner = nil)
+          super
           @nonce = attrs[:nonce]
-          @session_id = Doorkeeper::OpenidConnect.configuration.session_id&.call(request).to_s
         end
 
         # NOTE: Auto get default response_mode of specified response_type if response_mode is not
@@ -22,6 +21,10 @@ module Doorkeeper
           end
 
           grant_flow&.default_response_mode == 'fragment'
+        end
+
+        def session_id
+          Doorkeeper::OpenidConnect.configuration.session_id&.call(client&.application).to_s
         end
       end
     end
