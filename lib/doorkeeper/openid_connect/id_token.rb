@@ -5,11 +5,12 @@ module Doorkeeper
     class IdToken
       include ActiveModel::Validations
 
-      attr_reader :nonce
+      attr_reader :nonce, :session_id
 
-      def initialize(access_token, nonce = nil)
+      def initialize(access_token, nonce = nil, session_id = nil)
         @access_token = access_token
         @nonce = nonce
+        @session_id = session_id
         @resource_owner = Doorkeeper::OpenidConnect.configuration.resource_owner_from_access_token.call(access_token)
         @issued_at = Time.zone.now
       end
@@ -22,6 +23,7 @@ module Doorkeeper
           exp: expiration,
           iat: issued_at,
           nonce: nonce,
+          sid: session_id,
           auth_time: auth_time
         }.merge ClaimsBuilder.generate(@access_token, :id_token)
       end

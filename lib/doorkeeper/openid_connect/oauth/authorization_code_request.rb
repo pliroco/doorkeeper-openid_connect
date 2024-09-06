@@ -9,13 +9,13 @@ module Doorkeeper
         def after_successful_response
           super
 
-          nonce =
+          nonce, session_id =
             if (openid_request = grant.openid_request)
               openid_request.destroy!
-              openid_request.nonce
+              [openid_request.nonce, openid_request.session_id]
             end
 
-          id_token = Doorkeeper::OpenidConnect::IdToken.new(access_token, nonce)
+          id_token = Doorkeeper::OpenidConnect::IdToken.new(access_token, nonce, session_id)
           @response.id_token = id_token
         end
       end

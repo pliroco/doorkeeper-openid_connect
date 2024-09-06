@@ -22,6 +22,10 @@ module Doorkeeper
 
           grant_flow&.default_response_mode == 'fragment'
         end
+
+        def session_id
+          Doorkeeper::OpenidConnect.configuration.session_id&.call(client&.application).to_s
+        end
       end
     end
   end

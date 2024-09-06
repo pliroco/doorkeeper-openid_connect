@@ -8,7 +8,7 @@ module Doorkeeper
           if Doorkeeper::OAuth::Authorization::Code.method_defined?(:issue_token!)
             def issue_token!
               super.tap do |access_grant|
-                create_openid_request(access_grant) if pre_auth.nonce.present?
+                create_openid_request(access_grant) if [pre_auth.nonce, pre_auth.session_id].any?(&:present?)
               end
             end
 
@@ -17,7 +17,7 @@ module Doorkeeper
             # FIXME: drop this after dropping support of Doorkeeper < 5.4
             def issue_token
               super.tap do |access_grant|
-                create_openid_request(access_grant) if pre_auth.nonce.present?
+                create_openid_request(access_grant) if [pre_auth.nonce, pre_auth.session_id].any?(&:present?)
               end
             end
           end
@@ -27,7 +27,8 @@ module Doorkeeper
           def create_openid_request(access_grant)
             ::Doorkeeper::OpenidConnect::Request.create!(
               access_grant: access_grant,
-              nonce: pre_auth.nonce
+              nonce: pre_auth.nonce,
+              session_id: pre_auth.session_id,
             )
           end
         end

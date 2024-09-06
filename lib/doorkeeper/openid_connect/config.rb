@@ -79,6 +79,8 @@ module Doorkeeper
       option :discovery_url_options, default: lambda { |*_|
         {}
       }
+
+      option :session_id
     end
   end
 end
